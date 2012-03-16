@@ -55,10 +55,12 @@ getUserMedia.call(navigator, 'video', function(stream){
 			buffer.shift();
 		}
 		var finalImage = ctx.createImageData(200, 200);
-		for (var i = buffer[0].data.length; i--; i > 0) {
-			finalImage.data[i] = buffer.reduce(function(acc, frame){
-				return acc + frame.data[i];
-			}, 0) / buffer.length;
+		for (var i = buffer[0].data.length; i--;) {
+			var sum = 0;
+			for (var frame = 0, totalFrames = buffer.length; frame < totalFrames; frame++){
+				sum += buffer[frame].data[i];
+			}
+			finalImage.data[i] = sum / buffer.length;
 		}
 		ctx.putImageData(finalImage, 0, 0);
 		FPS.trackRender();
