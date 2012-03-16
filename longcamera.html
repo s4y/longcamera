@@ -17,7 +17,7 @@ function FPSTracker(){
 }
 FPSTracker.prototype.trackRender = function(){
 	this.renderTimes.push(+new Date);
-	if (this.renderTimes.length > 100) {
+	if (this.renderTimes.length > 20) {
 		this.renderTimes.shift();
 	}
 };
@@ -64,7 +64,7 @@ getUserMedia.call(navigator, 'video', function(stream){
 		}
 		ctx.putImageData(finalImage, 0, 0);
 		FPS.trackRender();
-		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() + 0.5);
+		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() * 10 + 0.5) / 10;
 
 	}, 20);
 });
