@@ -12,6 +12,19 @@ var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
 
+function FPSTracker(){
+	this.renderTimes = [];
+}
+FPSTracker.prototype.trackRender = function(){
+	this.renderTimes.push(+new Date);
+	if (this.renderTimes.length > 100) {
+		this.renderTimes.shift();
+	}
+};
+FPSTracker.prototype.getFPS = function(){
+	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
+}
+
 getUserMedia.call(navigator, 'video', function(stream){
 	var videoEl = document.createElement('video');
 	//document.body.appendChild(videoEl);
@@ -31,8 +44,8 @@ getUserMedia.call(navigator, 'video', function(stream){
 		// canvas.height = videoEl.videoHeight;
 	});
 
-	var numUpdates = 0;
 	var FPSdisplay = document.getElementById('FPS').firstChild;
+	var FPS = new FPSTracker;
 
 	var buffer = [];
 	setInterval(function(){
@@ -48,8 +61,8 @@ getUserMedia.call(navigator, 'video', function(stream){
 			}, 0) / buffer.length;
 		}
 		ctx.putImageData(finalImage, 0, 0);
-		numUpdates = numUpdates + 1;
-		FPSdisplay.nodeValue = numUpdates;
+		FPS.trackRender();
+		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() + 0.5);
 
 	}, 20);
 });
