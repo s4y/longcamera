@@ -33,10 +33,16 @@ getUserMedia.call(navigator, 'video', function(stream){
 	//cameraEl.play();
 	var canvas = document.getElementById('canvas'),
 	    inputCanvas = document.createElement('canvas'),
+		scoreCanvas = document.createElement('canvas'),
 	    ctx = canvas.getContext('2d'),
-		inputCtx = inputCanvas.getContext('2d');
+		inputCtx = inputCanvas.getContext('2d'),
+		scoreCtx = scoreCanvas.getContext('2d');
 
-	inputCanvas.width = inputCanvas.height = 200;
+	document.body.insertBefore(inputCanvas, canvas);
+	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
+
+	inputCanvas.width = inputCanvas.height =
+	scoreCanvas.width = scoreCanvas.height = 200;
 	
 
 	videoEl.addEventListener('play', function(){
@@ -51,10 +57,11 @@ getUserMedia.call(navigator, 'video', function(stream){
 	setInterval(function(){
 		inputCtx.drawImage(videoEl, 0, 0, 200, 200);
 		buffer.push(inputCtx.getImageData(0, 0, 200, 200));
-		if (buffer.length > 20){
+		if (buffer.length > 50){
 			buffer.shift();
 		}
 		var finalImage = ctx.createImageData(200, 200);
+		var scores = scoreCtx.createImageData(200, 200);
 		for (var i = buffer[0].data.length - 1; i >= 0; i--) {
 			var counter = {};
 			var max = 0;
@@ -72,8 +79,10 @@ getUserMedia.call(navigator, 'video', function(stream){
 				}
 			}
 			finalImage.data[i] = candidate;
+			scores.data[i] = max * 255 / buffer.length;
 		}
 		ctx.putImageData(finalImage, 0, 0);
+		scoreCtx.putImageData(scores, 0, 0);
 		FPS.trackRender();
 		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() * 10 + 0.5) / 10;
 
