@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<body>
+<canvas id="canvas" width=200 height=200></canvas>
+<h1 id="FPS">number of frames</h1>
+<script>
+var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
+                   navigator.mozGetUserMedia || navigator.msGetUserMedia;
+var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+
+var cameraEl = document.getElementById('camera');
+var canvasEl = document.getElementById('canvas');
+
+getUserMedia.call(navigator, 'video', function(stream){
+	var videoEl = document.createElement('video');
+	//document.body.appendChild(videoEl);
+	videoEl.src = URL.createObjectURL(stream);
+	videoEl.play();
+	//cameraEl.play();
+	var canvas = document.getElementById('canvas'),
+	    inputCanvas = document.createElement('canvas'),
+	    ctx = canvas.getContext('2d'),
+		inputCtx = inputCanvas.getContext('2d');
+
+	inputCanvas.width = inputCanvas.height = 200;
+	
+
+	videoEl.addEventListener('play', function(){
+		// canvas.width = videoEl.videoWidth;
+		// canvas.height = videoEl.videoHeight;
+	});
+
+	var numUpdates = 0;
+	var FPSdisplay = document.getElementById('FPS').firstChild;
+
+	var buffer = [];
+	setInterval(function(){
+		inputCtx.drawImage(videoEl, 0, 0, 200, 200);
+		buffer.push(inputCtx.getImageData(0, 0, 200, 200));
+		if (buffer.length > 20){
+			buffer.shift();
+		}
+		var finalImage = ctx.createImageData(200, 200);
+		for (var i = buffer[0].data.length; i--; i > 0) {
+			finalImage.data[i] = buffer.reduce(function(acc, frame){
+				return acc + frame.data[i];
+			}, 0) / buffer.length;
+		}
+		ctx.putImageData(finalImage, 0, 0);
+		numUpdates = numUpdates + 1;
+		FPSdisplay.nodeValue = numUpdates;
+
+	}, 20);
+});
+</script>
