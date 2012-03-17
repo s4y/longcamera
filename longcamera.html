@@ -1,17 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
+<style>
+	#controls>tbody>tr>th{
+		text-align: right;
+		padding-right: 0.5em;
+	}
+</style>
 <body>
 <canvas id="canvas" width=200 height=200></canvas>
-<input data-control type="range" id="hueLevel" min="0" max="360" value="0">
-<output for="hueLevel"></output>
-<input data-control type="range" id="hueWindow" min="0" max="360" value="15">
-<output for="hueWindow"></output>
-<input data-control type="range" id="saturationLevel" min="0" max="1" step="0.01">
-<output for="saturationLevel"></output>
-<input data-control type="range" id="saturationWindow" min="0" max="1" step="0.01">
-<output for="saturationWindow"></output>
-<h1 id="FPS">number of frames</h1>
+<span style="font-size: 1.5em" id="FPS">number of frames</span>
+<table id="controls">
+	<tr>
+		<th>Hue</th>
+		<td>
+			<input data-control type="range" id="hueLevel" min="0" max="360" value="0">
+			<output for="hueLevel"></output>
+		</td>
+	</tr>
+	<tr>
+		<th>Hue leniency</th>
+		<td>
+			<input data-control type="range" id="hueWindow" min="0" max="360" value="141">
+			<output for="hueWindow"></output>
+		</td>
+	</tr>
+	<tr>
+		<th>Saturation</th>
+		<td>
+			<input data-control type="range" id="saturationLevel" min="0" max="1" step="0.96">
+			<output for="saturationLevel"></output>
+		</td>
+	</tr>
+	<tr>
+		<th>Saturation leniency</th>
+		<td>
+			<input data-control type="range" id="saturationWindow" min="0" max="1" step="0.5">
+			<output for="saturationWindow"></output>
+		</td>
+	</tr>
+</table>
 <script>
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
                    navigator.mozGetUserMedia || navigator.msGetUserMedia;
