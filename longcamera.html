@@ -125,10 +125,6 @@ if(getUserMedia){
 // code translated from http://code.activestate.com/recipes/576919-python-rgb-and-hsv-conversion/
 // in turn from wikipedia: http://en.wikipedia.org/wiki/HSL_and_HSV#Converting_to_RGB
 function rgb2hsv(r, g, b){
-	var key = r+'_'+g+'_'+b;
-	if (key in rgb2hsv.cache){
-		return rgb2hsv.cache[key];
-	}
 	r = r/255;
 	g = g/255;
 	b = b/255;
@@ -151,14 +147,10 @@ function rgb2hsv(r, g, b){
         s = df/mx;
 	}
     v = mx;
-	return (rgb2hsv.cache[key] = { h: h, s: s, v: v });
+	return { h: h, s: s, v: v };
 }
-rgb2hsv.cache = {};
+
 var hsv2rgb = function(h, s, v){
-	var key = h+'_'+s+'_'+v;
-	if (key in hsv2rgb.cache){
-		return hsv2rgb.cache[key];
-	}
     var h60, hi, f, p, q, t, r = 0, g = 0, b = 0;
     h60 = h / 60;
     h60f = Math.floor(h60);
@@ -176,8 +168,7 @@ var hsv2rgb = function(h, s, v){
     r = Math.floor(r * 255);
     g = Math.floor(g * 255);
     b = Math.floor(b * 255);
-    return (hsv2rgb.cache[key] = { r: r, g: g, b: b });
+    return { r: r, g: g, b: b };
 }
-hsv2rgb.cache = {};
 
 </script>
