@@ -47,6 +47,7 @@
 		</td>
 	</tr>
 </table>
+<input type="checkbox" id="animate">
 <script>
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
                    navigator.mozGetUserMedia || navigator.msGetUserMedia;
@@ -58,6 +59,7 @@ var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
 
 function Control(element){
+	this.element = element;
     this.output = document.querySelector('[for="' + element.id + '"]');
 	this.output.value = this.value = +element.value;
 	element.addEventListener("change", function(){
@@ -204,5 +206,19 @@ var hsv2rgb = function(h, s, v){
     b = Math.floor(b * 255);
     return { r: r, g: g, b: b };
 }
+
+
+var animtimeout;
+
+document.getElementById('animate').addEventListener('change', function(){
+	if (this.checked) {
+		animtimeout = setInterval(function(){
+			controls.hueShift.value = (controls.hueShift.value + 1) % 360;
+		}, 50);
+	} else {
+		clearInterval(animtimeout);
+	}
+});
+
 
 </script>
