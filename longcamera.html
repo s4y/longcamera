@@ -11,6 +11,7 @@ var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
                    navigator.mozGetUserMedia || navigator.msGetUserMedia;
 var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
+var videoEl = document.createElement('video');
 var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
 
@@ -35,12 +36,7 @@ FPSTracker.prototype.getFPS = function(){
 	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
 }
 
-getUserMedia.call(navigator, 'video', function(stream){
-	var videoEl = document.createElement('video');
-	//document.body.appendChild(videoEl);
-	videoEl.src = URL.createObjectURL(stream);
-	videoEl.play();
-	//cameraEl.play();
+function start(){
 	var canvas = document.getElementById('canvas'),
 	    inputCanvas = document.createElement('canvas'),
 	    ctx = canvas.getContext('2d'),
@@ -86,5 +82,23 @@ getUserMedia.call(navigator, 'video', function(stream){
 		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() * 10 + 0.5) / 10;
 
 	}, 20);
-});
+};
+
+function fallback(){
+	videoEl.src = 'fallback.webm';
+	videoEl.loop = true;
+	videoEl.play();
+	start();
+}
+if(getUserMedia && false){
+	getUserMedia.call(navigator, 'video', function(stream){
+		videoEl.src = URL.createObjectURL(stream);
+		videoEl.play();
+		start();
+	}, function(){
+		fallback();
+	});
+} else {
+	fallback();
+}
 </script>
