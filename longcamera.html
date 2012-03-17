@@ -3,6 +3,8 @@
 <head>
 <body>
 <canvas id="canvas" width=200 height=200></canvas>
+<input type="range" id="threshold" min="-256" max="255">
+<output for="threshold"> </output>
 <h1 id="FPS">number of frames</h1>
 <script>
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -11,6 +13,14 @@ var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
+
+var thresholder = document.getElementById('threshold');
+var thresholderOutput = document.querySelector('[for="threshold"]');
+var threshold = thresholder.value;
+thresholder.addEventListener("change", function(){
+	threshold = thresholder.value;
+	thresholderOutput.value = threshold;
+});
 
 function FPSTracker(){
 	this.renderTimes = [];
@@ -33,16 +43,12 @@ getUserMedia.call(navigator, 'video', function(stream){
 	//cameraEl.play();
 	var canvas = document.getElementById('canvas'),
 	    inputCanvas = document.createElement('canvas'),
-		scoreCanvas = document.createElement('canvas'),
 	    ctx = canvas.getContext('2d'),
-		inputCtx = inputCanvas.getContext('2d'),
-		scoreCtx = scoreCanvas.getContext('2d');
+		inputCtx = inputCanvas.getContext('2d');
 
 	document.body.insertBefore(inputCanvas, canvas);
-	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
 
-	inputCanvas.width = inputCanvas.height =
-	scoreCanvas.width = scoreCanvas.height = 200;
+	inputCanvas.width = inputCanvas.height = 200;
 	
 
 	videoEl.addEventListener('play', function(){
@@ -53,36 +59,29 @@ getUserMedia.call(navigator, 'video', function(stream){
 	var FPSdisplay = document.getElementById('FPS').firstChild;
 	var FPS = new FPSTracker;
 
-	var buffer = [];
 	setInterval(function(){
+		var r, g, b, a, inputImage, finalImage;
 		inputCtx.drawImage(videoEl, 0, 0, 200, 200);
-		buffer.push(inputCtx.getImageData(0, 0, 200, 200));
-		if (buffer.length > 50){
-			buffer.shift();
-		}
-		var finalImage = ctx.createImageData(200, 200);
-		var scores = scoreCtx.createImageData(200, 200);
-		for (var i = buffer[0].data.length - 1; i >= 0; i--) {
-			var counter = {};
-			var max = 0;
-			var candidate = 0;
-			for (var frame = 0, totalFrames = buffer.length; frame < totalFrames; frame++){
-				var value = buffer[frame].data[i];
-				if (value in counter){
-					counter[value]++;
-				} else {
-					counter[value] = 1;
-				}
-				if (counter[value] > max){
-					max = counter[value];
-					candidate = value;
-				}
+		inputImage = inputCtx.getImageData(0, 0, 200, 200);
+		finalImage = ctx.createImageData(200, 200);
+		for (var i = 0, l = inputImage.data.length; i < l; i++) {
+			//finalImage.data[i] = inputImage.data[i%4 === 0 ? i + 1 : i%4 === 1 ? i - 1 : i];
+			r = inputImage.data[i];
+			g = inputImage.data[++i];
+			b = inputImage.data[++i];
+			a = inputImage.data[++i];
+			
+			if (r - b - g > threshold){
+				newR = g;
+				g = r;
+				r = newR
 			}
-			finalImage.data[i] = candidate;
-			scores.data[i] = max * 255 / buffer.length;
+			finalImage.data[i-3] = r;
+			finalImage.data[i-2] = g;
+			finalImage.data[i-1] = b;
+			finalImage.data[i] = a;
 		}
 		ctx.putImageData(finalImage, 0, 0);
-		scoreCtx.putImageData(scores, 0, 0);
 		FPS.trackRender();
 		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() * 10 + 0.5) / 10;
 
