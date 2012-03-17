@@ -24,7 +24,7 @@ var canvasEl = document.getElementById('canvas');
 
 function Control(element){
     this.output = document.querySelector('[for="' + element.id + '"]');
-	this.output.value = this.value = element.value;
+	this.output.value = this.value = +element.value;
 	element.addEventListener("change", function(){
 		this.output.value = this.value = (Math.floor(+element.value*100) / 100);
 	}.bind(this));
