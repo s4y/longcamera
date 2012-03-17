@@ -39,6 +39,13 @@
 			<output for="saturationWindow"></output>
 		</td>
 	</tr>
+	<tr>
+		<th>Color shift</th>
+		<td>
+			<input data-control type="range" id="hueShift" min="0" max="360" value="120" step="1">
+			<output for="hueShift"></output>
+		</td>
+	</tr>
 </table>
 <script>
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -111,8 +118,7 @@ function start(){
             if ((180 - Math.abs(Math.abs(hsv.h - controls.hueLevel.value) - 180) < hueDifference)
                 && (hsv.s > controls.saturationLevel.value - saturationDifference && hsv.s < controls.saturationLevel.value + saturationDifference)
             ){
-                var hueOffset = 120;
-                newH = hsv.h + hueOffset
+                newH = hsv.h + controls.hueShift.value;
                 newS = hsv.s ;
 				newV = hsv.v;
                 rgb = hsv2rgb(newH, newS, newV);
