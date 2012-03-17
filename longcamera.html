@@ -21,7 +21,7 @@
 	<tr>
 		<th>Hue leniency</th>
 		<td>
-			<input data-control type="range" id="hueWindow" min="0" max="360" value="141">
+			<input data-control type="range" id="hueWindow" min="0" max="360" value="0">
 			<output for="hueWindow"></output>
 		</td>
 	</tr>
@@ -90,7 +90,7 @@ function start(){
 	    ctx = canvas.getContext('2d'),
 		inputCtx = inputCanvas.getContext('2d');
 
-	document.body.insertBefore(inputCanvas, canvas);
+	// document.body.insertBefore(inputCanvas, canvas);
 
 	inputCanvas.width = inputCanvas.height = 200;
 	
