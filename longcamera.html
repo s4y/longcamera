@@ -80,7 +80,7 @@ function start(){
 			a = inputImage.data[++i];
 			hsv = rgb2hsv(r, g, b);
 			
-            if ((180 - Math.abs(Math.abs(hsv.h - controls.hueLevel.value)) < hueDifference) 
+            if ((180 - Math.abs(Math.abs(hsv.h - controls.hueLevel.value) - 180) < hueDifference)
                 && (hsv.s > controls.saturationLevel.value - saturationDifference && hsv.s < controls.saturationLevel.value + saturationDifference)
             ){
                 var hueOffset = 120;
