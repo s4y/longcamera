@@ -83,6 +83,7 @@ function Control(element){
 var controls = {};
 Array.prototype.forEach.call(document.querySelectorAll("[data-control]"), function(element){
 	controls[element.id] = new Control(element);
+    controls[element.id].output.value = controls[element.id].value = (Math.floor(+element.value*100) / 100);
 });
 
 function FPSTracker(){
