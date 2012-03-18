@@ -196,12 +196,12 @@ var hsv2rgb = function(h, s, v){
     p = v * (1 - s);
     q = v * (1 - f * s);
     t = v * (1 - (1 - f) * s);
-    if      (hi == 0) {r = v * 256; g = t; b = p;}
-    else if (hi == 1) {r = q; g = v; b = p}
-    else if (hi == 2) {r = q; g = v; b = t}
-    else if (hi == 3) {r = p; g = q; b = v}
-    else if (hi == 4) {r = t; g = p; b = v}
-    else if (hi == 5) {r = v, g = p, b = q}
+    if      (hi == 0) {r = v; g = t; b = p;}
+    else if (hi == 1) {r = q; g = v; b = p;}
+    else if (hi == 2) {r = q; g = v; b = t;}
+    else if (hi == 3) {r = p; g = q; b = v;}
+    else if (hi == 4) {r = t; g = p; b = v;}
+    else if (hi == 5) {r = v; g = p; b = q;}
     r = Math.floor(r * 255);
     g = Math.floor(g * 255);
     b = Math.floor(b * 255);
