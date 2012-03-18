@@ -46,6 +46,13 @@
 			<output for="hueShift"></output>
 		</td>
 	</tr>
+	<tr>
+		<th>Saturation shift</th>
+		<td>
+			<input data-control type="range" id="saturationShift" min="-1" max="1" value="0.01" step=".1">
+			<output for="saturationShift"></output>
+		</td>
+	</tr>
 </table>
 <input type="checkbox" id="animate">
 <script>
@@ -121,7 +128,7 @@ function start(){
                 && (hsv.s > controls.saturationLevel.value - saturationDifference && hsv.s < controls.saturationLevel.value + saturationDifference)
             ){
                 newH = hsv.h + controls.hueShift.value;
-                newS = hsv.s ;
+                newS = Math.min(Math.max(hsv.s + controls.saturationShift.value, 0), 1);
 				newV = hsv.v;
                 rgb = hsv2rgb(newH, newS, newV);
                 r = rgb.r;
