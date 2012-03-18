@@ -53,11 +53,15 @@
 			<output for="saturationShift"></output>
 		</td>
 	</tr>
+	<tr>
+		<th>Test Pattern</th>
+		<td><input type="checkbox" id="testPattern"></td>
+	</tr>
+	<tr>
+		<th>Mystery Feature</th>
+        <td><input type="checkbox" id="animate"></td>
+	</tr>
 </table>
-<h3>Use test pattern!</h3>
-<input type="checkbox" id="testPattern">
-<h3>Mystery feature!</h3>
-<input type="checkbox" id="animate">
 <script>
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
                    navigator.mozGetUserMedia || navigator.msGetUserMedia;
@@ -100,7 +104,7 @@ function start(){
 	    ctx = canvas.getContext('2d'),
 		inputCtx = inputCanvas.getContext('2d');
 
-	// document.body.insertBefore(inputCanvas, canvas);
+	document.body.insertBefore(inputCanvas, canvas);
 
 	inputCanvas.width = inputCanvas.height = 200;
 	
