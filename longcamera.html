@@ -54,6 +54,9 @@
 		</td>
 	</tr>
 </table>
+<h3>Use test pattern!</h3>
+<input type="checkbox" id="testPattern">
+<h3>Mystery feature!</h3>
 <input type="checkbox" id="animate">
 <script>
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -111,18 +114,31 @@ function start(){
 	var FPS = new FPSTracker;
 
 	setInterval(function(){
-		var r, g, b, a, hsv, newH, newS, hueDistance, inputImage, finalImage, rgb;
-		inputCtx.drawImage(videoEl, 0, 0, 200, 200);
-		inputImage = inputCtx.getImageData(0, 0, 200, 200);
-		finalImage = ctx.createImageData(200, 200);
+		var r, g, b, a, hsv, newH, newS, hueDistance, inputImage, finalImage, rgb, x, y;
+            inputCtx.drawImage(videoEl, 0, 0, 200, 200);
+            inputImage = inputCtx.getImageData(0, 0, 200, 200);
+            finalImage = ctx.createImageData(200, 200);
         var hueDifference = controls.hueWindow.value / 2;
         var saturationDifference = controls.saturationWindow.value / 2;
 		for (var i = 0, l = inputImage.data.length; i < l; i++) {
-			r = inputImage.data[i];
-			g = inputImage.data[++i];
-			b = inputImage.data[++i];
-			a = inputImage.data[++i];
-			hsv = rgb2hsv(r, g, b);
+            r = inputImage.data[i];
+            g = inputImage.data[++i];
+            b = inputImage.data[++i];
+            a = inputImage.data[++i];
+            hsv = rgb2hsv(r, g, b);
+            if (useTestPattern){
+                x = ((i+1) / 4) % 200;
+                y = Math.floor(((i+1) / 4) / 200);
+                hsv = {
+                    h: Math.floor(x * 360 / 200),
+                    s: 1 - (y / 200),
+                    v: .9
+                }
+                rgb = hsv2rgb(hsv.h, hsv.s, hsv.v);
+                r = rgb.r;
+                g = rgb.g;
+                b = rgb.b;
+            }
 			
             if ((180 - Math.abs(Math.abs(hsv.h - controls.hueLevel.value) - 180) < hueDifference)
                 && (hsv.s > controls.saturationLevel.value - saturationDifference && hsv.s < controls.saturationLevel.value + saturationDifference)
@@ -228,5 +244,14 @@ document.getElementById('animate').addEventListener('change', function(){
 	}
 });
 
+var useTestPattern = false;
+
+document.getElementById('testPattern').addEventListener('change', function(){
+    if (this.checked) {
+        useTestPattern = true;
+    } else {
+        useTestPattern = false;
+    }
+});
 
 </script>
