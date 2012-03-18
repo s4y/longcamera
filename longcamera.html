@@ -154,7 +154,7 @@ function fallback(){
 	videoEl.play();
 	start();
 }
-if(getUserMedia && false){
+if(getUserMedia){
 	getUserMedia.call(navigator, 'video', function(stream){
 		videoEl.src = URL.createObjectURL(stream);
 		videoEl.play();
