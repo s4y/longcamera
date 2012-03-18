@@ -54,6 +54,13 @@
 		</td>
 	</tr>
 	<tr>
+		<th>Value shift</th>
+		<td>
+			<input data-control type="range" id="valueShift" min="-1" max="1" value="0" step=".01">
+			<output for="valueShift"></output>
+		</td>
+	</tr>
+	<tr>
 		<th>Test Pattern</th>
 		<td><input type="checkbox" id="testPattern"></td>
 	</tr>
@@ -150,7 +157,7 @@ function start(){
             ){
                 newH = hsv.h + controls.hueShift.value;
                 newS = Math.min(Math.max(hsv.s + controls.saturationShift.value, 0), 1);
-				newV = hsv.v;
+                newV = Math.min(Math.max(hsv.v + controls.valueShift.value, 0), 1);
                 rgb = hsv2rgb(newH, newS, newV);
                 r = rgb.r;
                 g = rgb.g;
