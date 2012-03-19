@@ -27,6 +27,13 @@
 		</td>
 	</tr>
 	<tr>
+		<th>Hue fuzziness</th>
+		<td>
+			<input data-control type="range" id="hueFuzziness" min="0" max="180" value="20">
+			<output for="hueFuzziness"></output>
+		</td>
+	</tr>
+	<tr>
 		<th>Saturation</th>
 		<td>
 			<input data-control type="range" id="saturationLevel" min="0" max="1" step="0.01" value="0.98">
@@ -167,8 +174,17 @@ function start(fellBack){
 				b = rgb.b;
 			}
 			var hueDistance = 180 - Math.abs(Math.abs(hsv.h - controls.hueLevel.value) - 180);
+			var effectOpacity;
+			// Hue
+			if (hueDistance > hueTolerance + controls.hueFuzziness.value) {
+				effectOpacity = 0;
+			} else if (hueDistance < hueTolerance) {
+				effectOpacity = 1;
+			} else {
+				effectOpacity = 1 - ((hueDistance - hueTolerance) / controls.hueFuzziness.value);
+			}
 			if (
-				(hueDistance < hueTolerance) &&
+				effectOpacity &&
 				(
 					hsv.s > controls.saturationLevel.value - saturationTolerance &&
 					hsv.s < controls.saturationLevel.value + saturationTolerance
@@ -178,9 +194,9 @@ function start(fellBack){
 				newS = Math.min(Math.max(hsv.s + controls.saturationShift.value, 0), 1);
 				newV = Math.min(Math.max(hsv.v + controls.valueShift.value, 0), 1);
 				rgb = hsv2rgb(newH, newS, newV);
-				r = rgb.r;
-				g = rgb.g;
-				b = rgb.b;
+				r = (effectOpacity === 1 ? rgb.r : (rgb.r * effectOpacity + r * (1 - effectOpacity)));
+				g = (effectOpacity === 1 ? rgb.g : (rgb.g * effectOpacity + g * (1 - effectOpacity)));
+				b = (effectOpacity === 1 ? rgb.b : (rgb.b * effectOpacity + b * (1 - effectOpacity)));
 			}
 			finalImage.data[i-3] = r;
 			finalImage.data[i-2] = g;
