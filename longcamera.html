@@ -131,6 +131,27 @@ FPSTracker.prototype.getFPS = function(){
 	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
 };
 
+function drawTestPattern(imageData){
+	var x, y, i, hsv, rgb;
+	var width = imageData.width;
+	var height = imageData.height;
+	for (y = 0; y < height; y++){
+		for (x = 0; x < width; x++){
+			hsv = {
+				h: Math.floor(x * 360 / width),
+				s: 1 - (y / height),
+				v: .9
+			}
+			rgb = hsv2rgb(hsv.h, hsv.s, hsv.v);
+			i = (y*width + x) * 4;
+			imageData.data[i] = rgb.r;
+			imageData.data[i+1] = rgb.g;
+			imageData.data[i+2] = rgb.b;
+			imageData.data[i+3] = 255;
+		}
+	}
+}
+
 function start(fellBack){
 	var width = 200, height = 200,
 		canvas = document.getElementById('canvas'),
