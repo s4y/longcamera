@@ -48,6 +48,13 @@
 		</td>
 	</tr>
 	<tr>
+		<th>Saturation fuzziness</th>
+		<td>
+			<input data-control type="range" id="saturationFuzziness" min="0" max="0.5" step="0.01" value="0.23">
+			<output for="saturationFuzziness"></output>
+		</td>
+	</tr>
+	<tr>
 		<th>Color shift</th>
 		<td>
 			<input data-control type="range" id="hueShift" min="0" max="360" value="120" step="1">
@@ -183,13 +190,16 @@ function start(fellBack){
 			} else {
 				effectOpacity = 1 - ((hueDistance - hueTolerance) / controls.hueFuzziness.value);
 			}
-			if (
-				effectOpacity &&
-				(
-					hsv.s > controls.saturationLevel.value - saturationTolerance &&
-					hsv.s < controls.saturationLevel.value + saturationTolerance
-				)
-			){
+			// Saturation
+			var saturationDistance = Math.abs(controls.saturationLevel.value - hsv.s);
+			if (saturationDistance > saturationTolerance + controls.saturationFuzziness.value) {
+				effectOpacity = 0;
+			} else if (saturationDistance < saturationTolerance) {
+				effectOpacity = Math.min(1, effectOpacity);
+			} else {
+				effectOpacity = Math.min(1 - ((saturationDistance - saturationTolerance) / controls.saturationFuzziness.value), effectOpacity);
+			}
+			if (effectOpacity){
 				newH = (hsv.h + controls.hueShift.value) % 360;
 				newS = Math.min(Math.max(hsv.s + controls.saturationShift.value, 0), 1);
 				newV = Math.min(Math.max(hsv.v + controls.valueShift.value, 0), 1);
