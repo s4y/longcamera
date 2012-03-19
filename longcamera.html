@@ -82,11 +82,21 @@ var canvasEl = document.getElementById('canvas');
 function Control(element){
 	this.element = element;
     this.output = document.querySelector('[for="' + element.id + '"]');
-	this.output.value = this.value = +element.value;
 	element.addEventListener("change", function(){
-		this.output.value = this.value = (Math.floor(+element.value*100) / 100);
+		this.value = (Math.floor(+this.element.valueAsNumber*100) / 100);
+		this.update();
 	}.bind(this));
+	this.value = this.element.valueAsNumber;
+	this.update();
 }
+Control.prototype.update = function update(){
+	this.output.value = this.value;
+};
+Control.prototype.setValue = function setValue(newValue){
+	this.element.value = this.value = newValue;
+	this.update();
+};
+
 var controls = {};
 Array.prototype.forEach.call(document.querySelectorAll("[data-control]"), function(element){
 	controls[element.id] = new Control(element);
@@ -249,7 +259,7 @@ var animtimeout;
 document.getElementById('animate').addEventListener('change', function(){
 	if (this.checked) {
 		animtimeout = setInterval(function(){
-			controls.hueShift.value = (controls.hueShift.value + 1) % 360;
+			controls.hueShift.setValue((controls.hueShift.value + 1) % 360);
 		}, 50);
 	} else {
 		clearInterval(animtimeout);
