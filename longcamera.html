@@ -169,7 +169,7 @@ function start(fellBack){
 			hsv = rgb2hsv(r, g, b);
 			if (useTestPattern){
 				x = ((i+1) / 4) % width;
-				y = Math.floor(((i+1) / 4) / height);
+				y = Math.floor(((i+1) / 4) / width);
 				hsv = {
 					h: Math.floor(x * 360 / width),
 					s: 1 - (y / height),
