@@ -1,0 +1,3 @@
+[submodule "spectrum"]
+	path = spectrum
+	url = https://github.com/bgrins/spectrum.git

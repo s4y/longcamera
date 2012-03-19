@@ -2,6 +2,7 @@
 <!-- vim:set ts=4 sw=4 noexpandtab: -->
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="spectrum/spectrum.css">
 <style>
 	#controls>tbody>tr>th{
 		text-align: right;
@@ -57,14 +58,14 @@
 	<tr>
 		<th>Color shift</th>
 		<td>
-			<input data-control type="range" id="hueShift" min="0" max="360" value="120" step="1">
+			<input data-control type="range" id="hueShift" disabled min="0" max="360" value="120" step="1">
 			<output for="hueShift"></output>
 		</td>
 	</tr>
 	<tr>
 		<th>Saturation shift</th>
 		<td>
-			<input data-control type="range" id="saturationShift" min="-1" max="1" value="0" step=".01">
+			<input data-control type="range" id="saturationShift" disabled min="-1" max="1" value="0" step=".01">
 			<output for="saturationShift"></output>
 		</td>
 	</tr>
@@ -83,7 +84,13 @@
 		<th>Mystery Feature</th>
 		<td><input type="checkbox" id="animate"></td>
 	</tr>
+	<tr>
+		<th>Transform Color</th>
+		<td><input type="spectrum" id="transformColor"></td>
+	</td>
 </table>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script src="spectrum/spectrum.js"></script>
 <script>
 "use strict";
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
@@ -108,7 +115,7 @@ Control.prototype.update = function update(){
 	this.output.value = this.value;
 };
 Control.prototype.setValue = function setValue(newValue){
-	this.element.value = this.value = newValue;
+	this.element.value = this.value = (Math.floor(newValue*100) / 100);
 	this.update();
 };
 
@@ -157,7 +164,8 @@ function start(fellBack){
 		canvas = document.getElementById('canvas'),
 		inputCanvas = document.createElement('canvas'),
 		ctx = canvas.getContext('2d'),
-		inputCtx = inputCanvas.getContext('2d');
+		inputCtx = inputCanvas.getContext('2d'),
+		transformColor = document.getElementById('transformColor');
 
 	document.body.insertBefore(inputCanvas, canvas);
 
@@ -178,6 +186,16 @@ function start(fellBack){
 		var hsv = rgb2hsv(p[0], p[1], p[2]);
 		controls.hueLevel.setValue(Math.floor(hsv.h*100)/100);
 		controls.saturationLevel.setValue(Math.floor(hsv.s*100)/100);
+	});
+
+	$(transformColor).spectrum({
+		'change': function(specObj){
+			var h, s, v, funnyHsv, hsv;
+			funnyHsv = specObj.toHsv();
+			controls.hueShift.setValue((funnyHsv.h * 360) - controls.hueLevel.value);
+			controls.saturationShift.setValue(funnyHsv.s - controls.saturationLevel.value);
+			controls.valueShift.setValue(0);
+		}
 	});
 
 	var FPSdisplay = document.getElementById('FPS').firstChild;
