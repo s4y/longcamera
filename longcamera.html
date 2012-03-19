@@ -133,8 +133,8 @@ function start(fellBack){
 		if ((!videoEl.videoWidth || !videoEl.videoHeight) && !fellBack) {
 			fallback();
 		}
-		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
-		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
+		width = inputCanvas.width = canvas.width = (videoEl.videoWidth || 400);
+		height = inputCanvas.height = canvas.height = (videoEl.videoHeight || 400);
 	});
 
 	var FPSdisplay = document.getElementById('FPS').firstChild;
