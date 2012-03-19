@@ -117,7 +117,7 @@ FPSTracker.prototype.getFPS = function(){
 	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
 };
 
-function start(){
+function start(fellBack){
 	var width = 200, height = 200,
 		canvas = document.getElementById('canvas'),
 		inputCanvas = document.createElement('canvas'),
@@ -130,6 +130,9 @@ function start(){
 	
 
 	videoEl.addEventListener('play', function(){
+		if ((!videoEl.videoWidth || !videoEl.videoHeight) && !fellBack) {
+			fallback();
+		}
 		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
 		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
 	});
@@ -193,10 +196,8 @@ function start(){
 
 function fallback(){
 	videoEl.src = 'fallback.webm';
-	//videoEl.src = 'test.webm';
 	videoEl.loop = true;
 	videoEl.play();
-	start();
 }
 if(getUserMedia){
 	getUserMedia.call(navigator, 'video', function(stream){
@@ -205,9 +206,11 @@ if(getUserMedia){
 		start();
 	}, function(){
 		fallback();
+		start(true);
 	});
 } else {
 	fallback();
+	start(true);
 }
 
 // code translated from http://code.activestate.com/recipes/576919-python-rgb-and-hsv-conversion/
