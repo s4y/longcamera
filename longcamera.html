@@ -8,7 +8,7 @@
 	}
 </style>
 <body>
-<canvas id="canvas" width=200 height=200></canvas>
+<canvas id="canvas" width=400 height=400></canvas>
 <span style="font-size: 1.5em" id="FPS">number of frames</span>
 <table id="controls">
 	<tr>
@@ -124,7 +124,7 @@ function start(){
 
 	document.body.insertBefore(inputCanvas, canvas);
 
-	inputCanvas.width = inputCanvas.height = 200;
+	inputCanvas.width = inputCanvas.height = 400;
 	
 
 	videoEl.addEventListener('play', function(){
@@ -137,9 +137,9 @@ function start(){
 
 	setInterval(function(){
 		var r, g, b, a, hsv, newH, newS, hueDistance, inputImage, finalImage, rgb, x, y;
-            inputCtx.drawImage(videoEl, 0, 0, 200, 200);
-            inputImage = inputCtx.getImageData(0, 0, 200, 200);
-            finalImage = ctx.createImageData(200, 200);
+            inputCtx.drawImage(videoEl, 0, 0, 400, 400);
+            inputImage = inputCtx.getImageData(0, 0, 400, 400);
+            finalImage = ctx.createImageData(400, 400);
         var hueDifference = controls.hueWindow.value / 2;
         var saturationDifference = controls.saturationWindow.value / 2;
 		for (var i = 0, l = inputImage.data.length; i < l; i++) {
@@ -149,11 +149,11 @@ function start(){
             a = inputImage.data[++i];
             hsv = rgb2hsv(r, g, b);
             if (useTestPattern){
-                x = ((i+1) / 4) % 200;
-                y = Math.floor(((i+1) / 4) / 200);
+                x = ((i+1) / 4) % 400;
+                y = Math.floor(((i+1) / 4) / 400);
                 hsv = {
-                    h: Math.floor(x * 360 / 200),
-                    s: 1 - (y / 200),
+                    h: Math.floor(x * 360 / 400),
+                    s: 1 - (y / 400),
                     v: .9
                 }
                 rgb = hsv2rgb(hsv.h, hsv.s, hsv.v);
