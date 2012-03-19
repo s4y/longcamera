@@ -302,7 +302,7 @@ var animtimeout;
 document.getElementById('animate').addEventListener('change', function(){
 	if (this.checked) {
 		animtimeout = setInterval(function(){
-			controls.hueShift.setValue((controls.hueShift.value + 1) % 360);
+			controls.hueShift.setValue((controls.hueShift.value + 10) % 360);
 		}, 20);
 	} else {
 		clearInterval(animtimeout);
