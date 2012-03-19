@@ -165,7 +165,7 @@ function start(){
             if ((180 - Math.abs(Math.abs(hsv.h - controls.hueLevel.value) - 180) < hueDifference)
                 && (hsv.s > controls.saturationLevel.value - saturationDifference && hsv.s < controls.saturationLevel.value + saturationDifference)
             ){
-                newH = hsv.h + controls.hueShift.value;
+                newH = (hsv.h + controls.hueShift.value) % 360;
                 newS = Math.min(Math.max(hsv.s + controls.saturationShift.value, 0), 1);
                 newV = Math.min(Math.max(hsv.v + controls.valueShift.value, 0), 1);
                 rgb = hsv2rgb(newH, newS, newV);
