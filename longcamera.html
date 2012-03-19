@@ -119,7 +119,8 @@ FPSTracker.prototype.getFPS = function(){
 };
 
 function start(){
-	var canvas = document.getElementById('canvas'),
+	var width = 200, height = 200,
+		canvas = document.getElementById('canvas'),
 		inputCanvas = document.createElement('canvas'),
 		ctx = canvas.getContext('2d'),
 		inputCtx = inputCanvas.getContext('2d');
@@ -130,8 +131,8 @@ function start(){
 	
 
 	videoEl.addEventListener('play', function(){
-		// canvas.width = videoEl.videoWidth;
-		// canvas.height = videoEl.videoHeight;
+		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
+		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
 	});
 
 	var FPSdisplay = document.getElementById('FPS').firstChild;
@@ -139,9 +140,9 @@ function start(){
 
 	setInterval(function(){
 		var r, g, b, a, hsv, newH, newS, newV, hueDistance, inputImage, finalImage, rgb, x, y;
-		inputCtx.drawImage(videoEl, 0, 0, 400, 400);
-		inputImage = inputCtx.getImageData(0, 0, 400, 400);
-		finalImage = ctx.createImageData(400, 400);
+		inputCtx.drawImage(videoEl, 0, 0, width, height);
+		inputImage = inputCtx.getImageData(0, 0, width, height);
+		finalImage = ctx.createImageData(width, height);
 		var hueTolerance = controls.hueTolerance.value,
 			saturationTolerance = controls.saturationTolerance.value;
 		for (var i = 0, l = inputImage.data.length; i < l; i++) {
@@ -151,11 +152,11 @@ function start(){
 			a = inputImage.data[++i];
 			hsv = rgb2hsv(r, g, b);
 			if (useTestPattern){
-				x = ((i+1) / 4) % 400;
-				y = Math.floor(((i+1) / 4) / 400);
+				x = ((i+1) / 4) % width;
+				y = Math.floor(((i+1) / 4) / height);
 				hsv = {
-					h: Math.floor(x * 360 / 400),
-					s: 1 - (y / 400),
+					h: Math.floor(x * 360 / width),
+					s: 1 - (y / height),
 					v: .9
 				}
 				rgb = hsv2rgb(hsv.h, hsv.s, hsv.v);
