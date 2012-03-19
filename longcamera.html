@@ -151,6 +151,14 @@ function start(fellBack){
 		height = inputCanvas.height = canvas.height = (videoEl.videoHeight || 400);
 	});
 
+	inputCanvas.addEventListener('click', function(e){
+		console.log(e.offsetX, e.offsetY);
+		var p = ctx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
+		var hsv = rgb2hsv(p[0], p[1], p[2]);
+		controls.hueLevel.setValue(Math.floor(hsv.h*100)/100);
+		controls.saturationLevel.setValue(Math.floor(hsv.s*100)/100);
+	});
+
 	var FPSdisplay = document.getElementById('FPS').firstChild;
 	var FPS = new FPSTracker;
 
