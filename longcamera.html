@@ -71,6 +71,7 @@
 	</tr>
 </table>
 <script>
+"use strict";
 var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
 				   navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
@@ -125,7 +126,7 @@ function start(){
 
 	document.body.insertBefore(inputCanvas, canvas);
 
-	inputCanvas.width = inputCanvas.height = 400;
+	inputCanvas.width = inputCanvas.height = 200;
 	
 
 	videoEl.addEventListener('play', function(){
@@ -137,12 +138,12 @@ function start(){
 	var FPS = new FPSTracker;
 
 	setInterval(function(){
-		var r, g, b, a, hsv, newH, newS, hueDistance, inputImage, finalImage, rgb, x, y;
-			inputCtx.drawImage(videoEl, 0, 0, 400, 400);
-			inputImage = inputCtx.getImageData(0, 0, 400, 400);
-			finalImage = ctx.createImageData(400, 400);
-		var hueTolerance = controls.hueTolerance.value;
-		var saturationTolerance = controls.saturationTolerance.value;
+		var r, g, b, a, hsv, newH, newS, newV, hueDistance, inputImage, finalImage, rgb, x, y;
+		inputCtx.drawImage(videoEl, 0, 0, 400, 400);
+		inputImage = inputCtx.getImageData(0, 0, 400, 400);
+		finalImage = ctx.createImageData(400, 400);
+		var hueTolerance = controls.hueTolerance.value,
+			saturationTolerance = controls.saturationTolerance.value;
 		for (var i = 0, l = inputImage.data.length; i < l; i++) {
 			r = inputImage.data[i];
 			g = inputImage.data[++i];
@@ -238,7 +239,7 @@ function rgb2hsv(r, g, b){
 }
 
 var hsv2rgb = function(h, s, v){
-	var h60, hi, f, p, q, t, r = 0, g = 0, b = 0;
+	var h60, h60f, hi, f, p, q, t, r = 0, g = 0, b = 0;
 	h60 = h / 60;
 	h60f = Math.floor(h60);
 	hi = Math.floor(h60f) % 6;
