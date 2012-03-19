@@ -192,7 +192,7 @@ function start(fellBack){
 		'change': function(specObj){
 			var h, s, v, funnyHsv, hsv;
 			funnyHsv = specObj.toHsv();
-			controls.hueShift.setValue((funnyHsv.h * 360) - controls.hueLevel.value);
+			controls.hueShift.setValue(((funnyHsv.h * 360) - controls.hueLevel.value + 360) % 360);
 			controls.saturationShift.setValue(funnyHsv.s - controls.saturationLevel.value);
 			controls.valueShift.setValue(0);
 		}
