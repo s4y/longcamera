@@ -1,34 +1,61 @@
-var finalImage, counts;
+importScripts('/figue.js');
 
-var threshold = 30, patience = 50;
+var buffer = [];
+var finalImage;
 
 self.addEventListener('message', function(e){
-	var r, g, b, distance, inputData = e.data.imageData.data;
+	var counter,
+	    clusters,
+		pixelData;
 	if (!finalImage) {
 		finalImage = e.data.imageData;
-		counts = new Uint8Array(finalImage.data.length / 4);
+		self.postMessage({ name: 'readyForFrame' });
+		return;
+	}
+	buffer.push(e.data.imageData);
+	if (buffer.length > 20){
+		buffer.shift();
+	} else if (buffer.length < 20){
 		self.postMessage({ name: 'readyForFrame' });
 		return;
 	}
 	// var scores = scoreCtx.createImageData(200, 200);
-	for (var i = 0, l = inputData.length; i < l; i++) {
-		distance = 0;
-		r = inputData[i];
-		distance += Math.abs(r - finalImage.data[i++]);
-		g = inputData[i];
-		distance += Math.abs(g - finalImage.data[i++]);
-		b = inputData[i];
-		distance += Math.abs(b - finalImage.data[i++]);
-		// Just do this once for the alpha channel?
-		finalImage.data[i] = inputData[i];
-		if (distance < threshold) {
-			counts[i - 3 / 4] = 0;
-		} else if (++counts[i - 3 / 4] > patience) {
-			finalImage.data[i-3] = r;
-			finalImage.data[i-2] = g;
-			finalImage.data[i-1] = b;
-			counts[i - 3 / 4] = 0;
+	for (var i = 0, l = finalImage.data.length; i < l; i += 4) {
+		pixelData = []
+		for (var frame = 0, totalFrames = buffer.length; frame < totalFrames; frame++){
+			r = buffer[frame].data[i];
+			g = buffer[frame].data[i+1];
+			b = buffer[frame].data[i+2];
+			pixelData.push([r, g, b]);
 		}
+		var max = 0;
+		var candidate;
+		var centroid;
+		counter = {};
+		clusters = figue.kmeans(2, pixelData);
+		if (clusters){
+			clusters.assignments.forEach(function(category){
+				if (category in counter){
+					counter[category]++;
+					if (max < counter[category]){
+						max = counter[category];
+						candidate = category;
+					}
+				} else {
+					counter[category] = 1;
+				}
+			});
+			centroid = clusters.centroids[candidate];
+		} else {
+			centroid = pixelData[pixelData.length-1];
+
+		}
+
+		finalImage.data[i] = Math.floor(centroid[0] + .5);
+		finalImage.data[i+1] = Math.floor(centroid[1] + .5);
+		finalImage.data[i+2] = Math.floor(centroid[2] + .5);
+		// Just do this once for the alpha channel?
+		finalImage.data[i+3] = 255;
 	}
 	self.postMessage({ name: 'outputFrame', imageData: finalImage });
 	self.postMessage({ name: 'readyForFrame' });
