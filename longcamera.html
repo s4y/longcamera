@@ -25,6 +25,11 @@ FPSTracker.prototype.getFPS = function(){
 	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
 }
 
+var workers = [], i = 8;
+while (i--) {
+	workers.push(new Worker('filters/longcamera.js'));
+}
+
 getUserMedia.call(navigator, 'video', function(stream){
 	var videoEl = document.createElement('video');
 	//document.body.appendChild(videoEl);
@@ -36,56 +41,38 @@ getUserMedia.call(navigator, 'video', function(stream){
 		scoreCanvas = document.createElement('canvas'),
 	    ctx = canvas.getContext('2d'),
 		inputCtx = inputCanvas.getContext('2d'),
-		scoreCtx = scoreCanvas.getContext('2d');
-
-	document.body.insertBefore(inputCanvas, canvas);
-	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
-
-	inputCanvas.width = inputCanvas.height =
-	scoreCanvas.width = scoreCanvas.height = 200;
-	
-
-	videoEl.addEventListener('play', function(){
-		// canvas.width = videoEl.videoWidth;
-		// canvas.height = videoEl.videoHeight;
-	});
+		scoreCtx = scoreCanvas.getContext('2d'),
+		width, height;
 
 	var FPSdisplay = document.getElementById('FPS').firstChild;
 	var FPS = new FPSTracker;
 
-	var buffer = [];
-	setInterval(function(){
-		inputCtx.drawImage(videoEl, 0, 0, 200, 200);
-		buffer.push(inputCtx.getImageData(0, 0, 200, 200));
-		if (buffer.length > 50){
-			buffer.shift();
-		}
-		var finalImage = ctx.createImageData(200, 200);
-		var scores = scoreCtx.createImageData(200, 200);
-		for (var i = buffer[0].data.length - 1; i >= 0; i--) {
-			var counter = {};
-			var max = 0;
-			var candidate = 0;
-			for (var frame = 0, totalFrames = buffer.length; frame < totalFrames; frame++){
-				var value = buffer[frame].data[i];
-				if (value in counter){
-					counter[value]++;
-				} else {
-					counter[value] = 1;
-				}
-				if (counter[value] > max){
-					max = counter[value];
-					candidate = value;
-				}
-			}
-			finalImage.data[i] = candidate;
-			scores.data[i] = max * 255 / buffer.length;
-		}
-		ctx.putImageData(finalImage, 0, 0);
-		scoreCtx.putImageData(scores, 0, 0);
-		FPS.trackRender();
-		FPSdisplay.nodeValue = Math.floor(FPS.getFPS() * 10 + 0.5) / 10;
+	document.body.insertBefore(inputCanvas, canvas);
+	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
 
-	}, 20);
+	videoEl.addEventListener('play', function(){
+		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
+		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
+
+		workers.forEach(function(worker, i){
+			var size = (height / workers.length),
+				top = size * i;
+			worker.addEventListener('message', function(e){
+				switch (e.data.name) {
+				case 'readyForFrame':
+					inputCtx.drawImage(videoEl, 0, 0, width, height);
+					worker.postMessage({ imageData: inputCtx.getImageData(0, top, width, size) });
+					break;
+				case 'outputFrame':
+					ctx.putImageData(e.data.imageData, 0, top);
+					if (i === 0) {
+						FPS.trackRender();
+						FPSdisplay.nodeValue = Math.floor(FPS.getFPS() * 10 + 0.5) / 10;
+					}
+				}
+			});
+		});
+	});
+
 });
 </script>
