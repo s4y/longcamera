@@ -51,7 +51,7 @@ getUserMedia.call(navigator, 'video', function(stream){
 	setInterval(function(){
 		inputCtx.drawImage(videoEl, 0, 0, 200, 200);
 		buffer.push(inputCtx.getImageData(0, 0, 200, 200));
-		if (buffer.length > 20){
+		if (buffer.length > 50){
 			buffer.shift();
 		}
 		var finalImage = ctx.createImageData(200, 200);
