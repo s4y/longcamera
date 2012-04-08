@@ -1,4 +1,4 @@
-importScripts('/figue.js');
+importScripts('../figue.js');
 
 var buffer = [];
 var finalImage;
