@@ -1,9 +1,9 @@
 [submodule "k-means"]
 	path = k-means
 	url = git://github.com/Sidnicious/longcamera.git
-[submodule "greencam"]
-	path = greencam
-	url = git://github.com/Sidnicious/longcamera.git
 [submodule "motion-blur"]
 	path = motion-blur
+	url = git://github.com/Sidnicious/longcamera.git
+[submodule "greencamera"]
+	path = greencamera
 	url = git://github.com/Sidnicious/longcamera.git
