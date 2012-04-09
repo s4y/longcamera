@@ -4,3 +4,6 @@
 [submodule "greencam"]
 	path = greencam
 	url = git://github.com/Sidnicious/longcamera.git
+[submodule "motion-blur"]
+	path = motion-blur
+	url = git://github.com/Sidnicious/longcamera.git
