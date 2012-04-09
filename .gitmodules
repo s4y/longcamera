@@ -7,3 +7,6 @@
 [submodule "greencamera"]
 	path = greencamera
 	url = git://github.com/Sidnicious/longcamera.git
+[submodule "longcam-workers"]
+	path = longcam-workers
+	url = git://github.com/Sidnicious/longcamera.git
