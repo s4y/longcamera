@@ -46,14 +46,15 @@ getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
 	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
 
 	videoEl.addEventListener('playing', function(){
-		var totalWorkers = 8, i = totalWorkers;
+		var totalWorkers = 8, j = 0;
 		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
 		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
 
-		while (i--) { (function (){
+		for (j = 0; j < totalWorkers; j++) { (function (){
+			var i = j;
 			var worker = new Worker('filters/longcamera.js');
 			var size = (height / totalWorkers),
-				top = size * (totalWorkers - i);
+				top = size * i;
 			worker.addEventListener('message', function(e){
 				console.log('workerMessage');
 				switch (e.data.name) {
