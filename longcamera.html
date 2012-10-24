@@ -26,10 +26,6 @@ FPSTracker.prototype.getFPS = function(){
 }
 
 getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
-	var workers = [], i = 8;
-	while (i--) {
-		workers.push(new Worker('filters/longcamera.js'));
-	}
 	var videoEl = document.createElement('video');
 	//document.body.appendChild(videoEl);
 	videoEl.src = URL.createObjectURL(stream);
@@ -49,14 +45,17 @@ getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
 	document.body.insertBefore(inputCanvas, canvas);
 	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
 
-	videoEl.addEventListener('play', function(){
+	videoEl.addEventListener('playing', function(){
+		var totalWorkers = 8, i = totalWorkers;
 		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
 		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
 
-		workers.forEach(function(worker, i){
-			var size = (height / workers.length),
-				top = size * i;
+		while (i--) { (function (){
+			var worker = new Worker('filters/longcamera.js');
+			var size = (height / totalWorkers),
+				top = size * (totalWorkers - i);
 			worker.addEventListener('message', function(e){
+				console.log('workerMessage');
 				switch (e.data.name) {
 				case 'readyForFrame':
 					inputCtx.drawImage(videoEl, 0, 0, width, height);
@@ -70,7 +69,7 @@ getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
 					}
 				}
 			});
-		});
+		})(); }
 	});
 
 });
