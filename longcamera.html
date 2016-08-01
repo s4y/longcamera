@@ -93,10 +93,6 @@
 <script src="spectrum/spectrum.js"></script>
 <script>
 "use strict";
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-				   navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
-var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 var videoEl = document.createElement('video');
 var canvasEl = document.getElementById('canvas');
@@ -172,12 +168,13 @@ function start(fellBack){
 	inputCanvas.width = inputCanvas.height = 200;
 	
 
-	videoEl.addEventListener('play', function(){
-		if ((!videoEl.videoWidth || !videoEl.videoHeight) && !fellBack) {
-			fallback();
-		}
+	videoEl.addEventListener('loadedmetadata', function(){
 		width = inputCanvas.width = canvas.width = (videoEl.videoWidth || 400);
 		height = inputCanvas.height = canvas.height = (videoEl.videoHeight || 400);
+	});
+
+	videoEl.addEventListener('error', function(){
+		fallback();
 	});
 
 	inputCanvas.addEventListener('click', function(e){
@@ -272,16 +269,18 @@ function fallback(){
 	videoEl.loop = true;
 	videoEl.play();
 }
-if(getUserMedia){
-	getUserMedia.call(navigator, 'video', function(stream){
-		videoEl.src = URL.createObjectURL(stream);
-		videoEl.play();
-		start();
-	}, function(){
-		fallback();
-		start(true);
-	});
-} else {
+try {
+	navigator.mediaDevices.getUserMedia({ video: true })
+		.then(stream => {
+			videoEl.src = URL.createObjectURL(stream);
+			videoEl.play();
+			start();
+		})
+		.catch(e => {
+			fallback();
+			start(true);
+		});
+} catch(e) {
 	fallback();
 	start(true);
 }
