@@ -61,5 +61,3 @@ self.addEventListener('message', function(e){
 	self.postMessage({ name: 'readyForFrame' });
 	// scoreCtx.putImageData(scores, 0, 0);
 });
-
-self.postMessage({ name: 'readyForFrame' });

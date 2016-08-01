@@ -55,11 +55,16 @@ navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
 		workers.forEach(function(worker, i){
 			var size = (height / workers.length),
 				top = size * i;
+
+			function workerReady() {
+				inputCtx.drawImage(videoEl, 0, 0, width, height);
+				worker.postMessage({ imageData: inputCtx.getImageData(0, top, width, size) });
+			}
+
 			worker.addEventListener('message', function(e){
 				switch (e.data.name) {
 				case 'readyForFrame':
-					inputCtx.drawImage(videoEl, 0, 0, width, height);
-					worker.postMessage({ imageData: inputCtx.getImageData(0, top, width, size) });
+					workerReady();
 					break;
 				case 'outputFrame':
 					ctx.putImageData(e.data.imageData, 0, top);
@@ -69,6 +74,8 @@ navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
 					}
 				}
 			});
+
+			workerReady();
 		});
 	});
 
