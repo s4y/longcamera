@@ -5,9 +5,7 @@
 <canvas id="canvas" width=200 height=200></canvas>
 <h1 id="FPS">number of frames</h1>
 <script>
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-                   navigator.mozGetUserMedia || navigator.msGetUserMedia;
-var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+"use strict";
 
 var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
@@ -30,7 +28,7 @@ while (i--) {
 	workers.push(new Worker('filters/longcamera.js'));
 }
 
-getUserMedia.call(navigator, 'video', function(stream){
+navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
 	var videoEl = document.createElement('video');
 	//document.body.appendChild(videoEl);
 	videoEl.src = URL.createObjectURL(stream);
@@ -50,9 +48,9 @@ getUserMedia.call(navigator, 'video', function(stream){
 	document.body.insertBefore(inputCanvas, canvas);
 	document.body.insertBefore(scoreCanvas, canvas.nextSibling);
 
-	videoEl.addEventListener('play', function(){
-		width = inputCanvas.width = canvas.width = videoEl.videoWidth;
-		height = inputCanvas.height = canvas.height = videoEl.videoHeight;
+	videoEl.addEventListener('loadedmetadata', function(){
+		width = inputCanvas.width = canvas.width = (videoEl.videoWidth || 400);
+		height = inputCanvas.height = canvas.height = (videoEl.videoHeight || 400);
 
 		workers.forEach(function(worker, i){
 			var size = (height / workers.length),
