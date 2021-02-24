@@ -7,6 +7,9 @@
 		text-align: right;
 		padding-right: 0.5em;
 	}
+	#FPS {
+		display: block;
+	}
 </style>
 <body>
 <canvas id="canvas" width=400 height=400></canvas>
@@ -86,9 +89,6 @@
 </table>
 <script>
 "use strict";
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-				   navigator.mozGetUserMedia || navigator.msGetUserMedia;
-
 var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
 var videoEl = document.createElement('video');
@@ -97,7 +97,7 @@ var canvasEl = document.getElementById('canvas');
 function Control(element){
 	this.element = element;
 	this.output = document.querySelector('[for="' + element.id + '"]');
-	element.addEventListener("change", function(){
+	element.addEventListener("input", function(){
 		this.value = (Math.floor(+this.element.valueAsNumber*100) / 100);
 		this.update();
 	}.bind(this));
@@ -164,7 +164,7 @@ function start(fellBack){
 	inputCanvas.width = inputCanvas.height = 200;
 	
 
-	videoEl.addEventListener('play', function(){
+	videoEl.addEventListener('playing', function(){
 		if ((!videoEl.videoWidth || !videoEl.videoHeight) && !fellBack) {
 			fallback();
 		}
@@ -254,15 +254,17 @@ function fallback(){
 	videoEl.loop = true;
 	videoEl.play();
 }
-if(getUserMedia){
-	getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
-		videoEl.src = URL.createObjectURL(stream);
-		videoEl.play();
-		start();
-	}, function(){
-		fallback();
-		start(true);
-	});
+if(navigator.mediaDevices.getUserMedia){
+	navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+		.catch(function(){
+			fallback();
+			start(true);
+		})
+		.then(function(stream){
+			videoEl.srcObject = stream;
+			videoEl.play();
+			start();
+		});
 } else {
 	fallback();
 	start(true);
