@@ -5,10 +5,6 @@
 <canvas id="canvas" width=200 height=200></canvas>
 <h1 id="FPS">number of frames</h1>
 <script>
-var getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia ||
-                   navigator.mozGetUserMedia || navigator.msGetUserMedia;
-var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
-
 var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
 
@@ -25,10 +21,11 @@ FPSTracker.prototype.getFPS = function(){
 	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
 }
 
-getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
+navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(function(stream){
+	var workers = [], i = 8;
 	var videoEl = document.createElement('video');
 	//document.body.appendChild(videoEl);
-	videoEl.src = URL.createObjectURL(stream);
+	videoEl.srcObject = stream;
 	videoEl.play();
 	//cameraEl.play();
 	var canvas = document.getElementById('canvas'),
@@ -38,11 +35,6 @@ getUserMedia.call(navigator, { video: true, audio: false }, function(stream){
 
 	inputCanvas.width = inputCanvas.height = 200;
 	
-
-	videoEl.addEventListener('play', function(){
-		// canvas.width = videoEl.videoWidth;
-		// canvas.height = videoEl.videoHeight;
-	});
 
 	var FPSdisplay = document.getElementById('FPS').firstChild;
 	var FPS = new FPSTracker;
