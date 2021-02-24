@@ -5,8 +5,6 @@
 <canvas id="canvas" width=200 height=200></canvas>
 <h1 id="FPS">number of frames</h1>
 <script>
-"use strict";
-
 var cameraEl = document.getElementById('camera');
 var canvasEl = document.getElementById('canvas');
 
@@ -23,15 +21,11 @@ FPSTracker.prototype.getFPS = function(){
 	return this.renderTimes.length / (+new Date() - this.renderTimes[0]) * 1000;
 }
 
-var workers = [], i = 8;
-while (i--) {
-	workers.push(new Worker('filters/longcamera.js'));
-}
-
-navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
+navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(function(stream){
+	var workers = [], i = 8;
 	var videoEl = document.createElement('video');
 	//document.body.appendChild(videoEl);
-	videoEl.src = URL.createObjectURL(stream);
+	videoEl.srcObject = stream;
 	videoEl.play();
 	//cameraEl.play();
 	var canvas = document.getElementById('canvas'),
@@ -51,6 +45,8 @@ navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
 	videoEl.addEventListener('loadedmetadata', function(){
 		width = inputCanvas.width = canvas.width = (videoEl.videoWidth || 400);
 		height = inputCanvas.height = canvas.height = (videoEl.videoHeight || 400);
+		while (i--)
+			workers.push(new Worker('filters/longcamera.js'));
 
 		workers.forEach(function(worker, i){
 			var size = (height / workers.length),
@@ -78,6 +74,5 @@ navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream){
 			workerReady();
 		});
 	});
-
 });
 </script>
